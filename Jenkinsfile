@@ -5,9 +5,6 @@ pipeline {
      * Tools section — the name must match what you configured in:
      * Jenkins → Manage Jenkins → Global Tool Configuration → Maven
      */
-    tools {
-        /*maven 'Maven'*/
-    }
 
     /*
      * Parameters: visible when clicking "Build with Parameters"
