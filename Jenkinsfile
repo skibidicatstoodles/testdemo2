@@ -1,46 +1,73 @@
 pipeline {
     agent any
 
+    /*
+     * Tools section — the name must match what you configured in:
+     * Jenkins → Manage Jenkins → Global Tool Configuration → Maven
+     */
+    tools {
+        maven 'Maven'
+    }
+
+    /*
+     * Parameters: visible when clicking "Build with Parameters"
+     */
+    parameters {
+        string(name: 'VERSION', defaultValue: '', description: 'Version to deploy on prod')
+        choice(name: 'CHOOSE_VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: 'Select version')
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'Run test stage?')
+    }
+
+    /*
+     * Global environment variables
+     */
     environment {
-        // Global environment variable accessible in any stage
         NEW_VERSION = '1.3.0'
     }
 
     stages {
+
         stage('Build') {
             steps {
-                echo 'Building..'
-                echo "Building version ${NEW_VERSION}"
-                // build commands here
+                echo 'Building Project'
+                echo "Using environment variable: ${NEW_VERSION}"
+                echo "User-provided VERSION param: ${params.VERSION}"
+                echo "Choice selected: ${params.CHOOSE_VERSION}"
+
+                // Example Maven command
+                sh "mvn install"
             }
         }
 
         stage('Test') {
+            when {
+                expression { params.executeTests }
+            }
             steps {
-                echo 'Testing..'
-                echo "Testing version ${NEW_VERSION}"
-                // test commands here
+                echo 'Testing Project'
+                sh "echo 'Running tests...'"
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying..'
+                echo 'Deploying Project'
                 echo "Deploying version ${NEW_VERSION}"
-                // deploy commands here
+                echo "Deploying user-selected version: ${params.CHOOSE_VERSION}"
             }
         }
     }
 
+    /*
+     * Post actions — run after pipeline completes
+     */
     post {
-        // Always executed at the end
         always {
             echo 'Post build condition running'
         }
 
-        // Only if pipeline fails
         failure {
-            echo 'Post action if build failed'
+            echo 'Post action triggered because build FAILED'
         }
     }
 }
