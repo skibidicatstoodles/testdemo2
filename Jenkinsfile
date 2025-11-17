@@ -6,7 +6,7 @@ pipeline {
      * Jenkins → Manage Jenkins → Global Tool Configuration → Maven
      */
     tools {
-        maven 'Maven'
+        /*maven 'Maven'*/
     }
 
     /*
